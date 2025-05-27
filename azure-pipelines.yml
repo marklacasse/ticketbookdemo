@@ -22,12 +22,14 @@ jobs:
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         goals: 'package'
  - job: verify_application
-   pool: server
+   ##pool: server
+   pool:
+      vmImage: ubuntu-latest
    steps:
     - task: ContrastIntegration@0
       inputs:
         vulnerabilitySource: 'assess'
-        connectedServiceName: 'apptwo'
+        connectedServiceName: 'apptwo-foo'
         application: '39865b51-79df-41a1-af18-7cf23d8fd366'
         thresholdDefinition: 'split'
         criticalCriteria: true
