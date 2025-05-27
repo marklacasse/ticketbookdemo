@@ -26,7 +26,7 @@ jobs:
    steps:
     - task: ContrastIntegration@0
       inputs:
-        vulnerabilitySource: 'both'
+        vulnerabilitySource: 'assess'
         connectedServiceName: 'apptwo'
         application: '39865b51-79df-41a1-af18-7cf23d8fd366'
         thresholdDefinition: 'split'
