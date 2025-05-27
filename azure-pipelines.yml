@@ -5,18 +5,35 @@
 
 trigger:
 - master
+jobs:
 
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+ - job: build_application
+   pool:
+      vmImage: ubuntu-latest
+   steps:
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        goals: 'package'
+ - job: verify_application
+   pool: server
+   steps:
+    - task: ContrastIntegration@0
+      inputs:
+        vulnerabilitySource: 'both'
+        connectedServiceName: 'apptwo'
+        application: '39865b51-79df-41a1-af18-7cf23d8fd366'
+        thresholdDefinition: 'split'
+        criticalCriteria: true
+        highCriteria: true
+        mediumCriteria: false
+        lowCriteria: false
+        noteCriteria: false
+        critical: 0
+        high: 2
