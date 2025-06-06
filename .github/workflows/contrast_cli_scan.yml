@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - 'main'
-  workflow_run:
-      types: [completed]
+  # workflow_run:
+  #     types: [completed]
 
 runs: 
  using: "composite"
