@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
           
       - name: Run Contrast AI SmartFix - Generate Fixes Action
-        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1 # Replace with the latest version
+        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1.0.6 # Replace with the latest version
         with:
           # Contrast Configuration
           contrast_host: ${{ vars.CONTRAST_HOST }} # The host name of your Contrast SaaS instance, e.g. 'app.contrastsecurity.com'
@@ -44,7 +44,7 @@ jobs:
           contrast_api_key: ${{ secrets.CONTRAST_API_KEY }}
 
           # GitHub Configuration
-          github_token: ${{ secrets.GITHUB_TOKEN }} # Necessary for creating PRs.  This is the token GitHub auto-creates for actions and is not a Personal Access Token (PAT).
+          github_token: ${{ secrets.MY_GITHUB_TOKEN }} # Necessary for creating PRs.  This is the token GitHub auto-creates for actions and is not a Personal Access Token (PAT).
           base_branch: '${{ github.event.repository.default_branch }}' # This will default to your repo default branch (other common base branches are 'main', 'master' or 'develop')
 
           # Required Runtime Configuration
@@ -85,7 +85,7 @@ jobs:
         with:
           run_task: merge 
           # --- GitHub Token ---
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.MY_GITHUB_TOKEN }}
           # --- Contrast API Credentials ---
           contrast_host: ${{ vars.CONTRAST_HOST }}
           contrast_org_id: ${{ vars.CONTRAST_ORG_ID }}
@@ -106,11 +106,11 @@ jobs:
           fetch-depth: 0
 
       - name: Notify Contrast on PR Closed
-        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1 # Replace with the latest version
+        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1.0.6 # Replace with the latest version
         with:
           run_task: closed
           # --- GitHub Token ---
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.MY_GITHUB_TOKEN }}
           # --- Contrast API Credentials ---
           contrast_host: ${{ vars.CONTRAST_HOST }}
           contrast_org_id: ${{ vars.CONTRAST_ORG_ID }}
