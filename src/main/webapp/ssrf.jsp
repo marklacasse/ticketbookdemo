@@ -18,9 +18,39 @@
 
 	<P>Any time an application uses untrusted data to open a URL, an attacker can make it issue forged requests that originate from the targeted server. This can be used to steal data, invoke functions, or as an intranet portscanner.</P>
 	<% 
-		String url = request.getParameter( "url" );
-		if ( url == null ) url = "file:///etc/passwd";
-		String pageContent = IOUtils.toString(new URL(url), StandardCharsets.UTF_8);
+		// Separate method for URL validation
+		String validateAndSanitizeURL(String inputURL) {
+			if (inputURL == null || inputURL.isEmpty()) {
+				// Default to a safe URL
+				return "https://www.example.com";
+			}
+			
+			try {
+				URL urlObj = new URL(inputURL);
+				String protocol = urlObj.getProtocol();
+				
+				// Only allow HTTP and HTTPS protocols
+				if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
+					return "https://www.example.com";
+				}
+				
+				// Additional validation could be added here
+				// such as hostname validation against a whitelist
+				
+				return inputURL;
+			} catch (MalformedURLException e) {
+				return "https://www.example.com";
+			}
+		}
+		
+		String url = request.getParameter("url");
+		String safeUrl = validateAndSanitizeURL(url);
+		String pageContent = "";
+		try {
+			pageContent = IOUtils.toString(new URL(safeUrl), StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			pageContent = "Error retrieving content: " + e.getMessage();
+		}
 	%>
 
 	<BR>
@@ -34,7 +64,7 @@
 				<div class="panel-body">
 					<form role="form" method="POST">
 						<div class="form-group">
-							<input id="url" name="url" value="<%=url %>"
+							<input id="url" name="url" value="<%=safeUrl %>"
 								class="form-control" placeholder='Enter URL'>
 						</div>
 						<button name="submit" type="submit" class="btn btn-warning">Submit</button>
