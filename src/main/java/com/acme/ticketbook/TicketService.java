@@ -1,5 +1,6 @@
 package com.acme.ticketbook;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -21,6 +22,13 @@ public class TicketService {
 	public void create(Person p) {
 		if ( p != null && p != Person.ANONYMOUS ) {
 			map.put( p.getTicket(), p );
+			// Save to database
+			try {
+				Database db = new Database();
+				db.createTicket(p);
+			} catch (SQLException e) {
+				Logger.getLogger(TicketService.class).error("Failed to save ticket to database", e);
+			}
 		}
 	}
 	
