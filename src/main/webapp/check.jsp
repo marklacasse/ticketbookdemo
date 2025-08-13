@@ -32,7 +32,13 @@
 	</div>
 
 	<%
-		Person p = TicketService.instance().get( request.getParameter( "ticket") );
+		String ticketParam = request.getParameter("ticket");
+		// Validate ticket parameter to prevent SQL injection
+		String sanitizedTicket = null;
+		if (ticketParam != null && ticketParam.matches("^[a-zA-Z0-9-]*$")) {
+			sanitizedTicket = ticketParam;
+		}
+		Person p = TicketService.instance().get(sanitizedTicket);
 		if ( p != null ) {
 	%>
 	<div class="row">
