@@ -21,6 +21,8 @@ public class TicketService {
 	public void create(Person p) {
 		if ( p != null && p != Person.ANONYMOUS ) {
 			map.put( p.getTicket(), p );
+			// Store in database using the safe method
+			Database.instance().createTicket(p);
 		}
 	}
 	
