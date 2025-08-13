@@ -44,7 +44,8 @@ public class Person {
 	
 	public void setName( String name ) {
 		if ( name != null ) {
-			this.name = name;
+			// Sanitize name input to prevent SQL injection
+			this.name = sanitizeInput(name);
 		}
 	}
 
@@ -53,7 +54,8 @@ public class Person {
 	}
 
 	private void setCity(String city) {
-		this.city = city;
+		// Sanitize city input to prevent SQL injection
+		this.city = sanitizeInput(city);
 	}
 
 	public String getTicket() {
@@ -70,7 +72,8 @@ public class Person {
 
 	public void setCreditCard(String cc) {
 		if ( cc != null ) {
-			this.creditcard = encrypt(cc);
+			// Sanitize credit card input to prevent SQL injection
+			this.creditcard = encrypt(sanitizeInput(cc));
 		}
 	}
 	
@@ -109,5 +112,34 @@ public class Person {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Sanitizes user input to prevent SQL injection attacks
+	 * @param input The user input to sanitize
+	 * @return Sanitized input string safe for use in SQL statements
+	 */
+	private String sanitizeInput(String input) {
+		if (input == null) {
+			return null;
+		}
+		
+		// Remove characters that could be used for SQL injection
+		// This replaces single quotes with double single quotes to prevent most basic injection patterns
+		input = input.replace("'", "''");
+		
+		// Also remove other potentially dangerous SQL characters
+		input = input.replace(";", "");
+		input = input.replace("--", "");
+		input = input.replace("/*", "");
+		input = input.replace("*/", "");
+		input = input.replace("#", "");
+		
+		// Restrict input length to reduce attack surface
+		if (input.length() > 255) {
+			input = input.substring(0, 255);
+		}
+		
+		return input;
 	}
 }
