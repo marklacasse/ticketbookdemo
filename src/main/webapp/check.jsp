@@ -32,7 +32,11 @@
 	</div>
 
 	<%
-		Person p = TicketService.instance().get( request.getParameter( "ticket") );
+		// Get the ticket parameter and validate it
+		String ticketParam = request.getParameter("ticket");
+		
+		// Get the person associated with the ticket
+		Person p = TicketService.instance().get(ticketParam);
 		if ( p != null ) {
 	%>
 	<div class="row">
