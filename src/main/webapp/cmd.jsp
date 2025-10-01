@@ -5,14 +5,43 @@
 <html>
 
 <%
-	String param = request.getParameter("name");
-	if (param == null) param = "";
-	if(System.getProperty("os.name").contains("Windows")) {
-		Runtime.getRuntime().exec( "dir /s " + param );	
-	} else {
-		Runtime.getRuntime().exec( "ls " + param );
+	// Define a method to validate and sanitize command parameters
+	private boolean isValidCommandParameter(String input) {
+		// Only allow alphanumeric chars and specific safe characters
+		return input != null && input.matches("^[a-zA-Z0-9_\\-./]*$");
+	}
+
+	// This function safely executes commands using an allowlist approach
+	private void safeExecuteCommand(HttpServletRequest req) {
+		// Get parameter - checking both 'name' and 'cmd' parameters based on vulnerability report
+		String param = req.getParameter("name");
+		if (param == null) {
+			param = req.getParameter("cmd");
+		}
+		
+		// Default to empty string if no parameter provided
+		if (param == null) param = "";
+		
+		// Only proceed if parameter passes validation
+		if (isValidCommandParameter(param)) {
+			try {
+				// Use ProcessBuilder with arguments as array elements rather than string concatenation
+				if(System.getProperty("os.name").contains("Windows")) {
+					ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "dir", "/s", param);
+					pb.start();
+				} else {
+					ProcessBuilder pb = new ProcessBuilder("ls", param);
+					pb.start();
+				}
+			} catch (Exception e) {
+				// Log the error but don't expose details to the user
+				e.printStackTrace();
+			}
+		}
 	}
 	
+	// Execute the command safely
+	safeExecuteCommand(request);
 %>
 
 <head>
@@ -31,12 +60,12 @@
 		<div class="col-md-6">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<h3 class="panel-title">Enter some data to add to the 'ls' command (try ;netstat -a)</h3>
+					<h3 class="panel-title">Enter a directory path to list</h3>
 				</div>
 				<div class="panel-body">
 					<form role="form" method="POST" action="cmd.jsp">
 						<div class="form-group">
-							<input name="protocol" id="protocol" value="netstat -an" class="form-control" placeholder="data">
+							<input name="name" id="name" class="form-control" placeholder="Enter directory path to list">
 						</div>
 						<button name="submit" type="submit" class="btn btn-warning">Submit</button>
 					</form>
