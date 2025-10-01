@@ -47,18 +47,24 @@
         "constitution.txt", "declaration.txt", "gettysburg.txt"
     ));
     
+    // Create a dedicated method for filename validation
+    boolean isValidFilename(String filename, Set<String> allowedList) {
+        return filename != null && !filename.isEmpty() && allowedList.contains(filename);
+    }
+    
     if (requestedFile != null && !requestedFile.isEmpty()) {
         // Validate that the requested file is in our whitelist
-        if (allowedFiles.contains(requestedFile)) {
+        if (isValidFilename(requestedFile, allowedFiles)) {
             try {
                 // Use a predefined base directory for all files
                 String baseDir = "/home/runner/work/ticketbookdemo/ticketbookdemo/src/main/resources/textfiles";
                 
-                // Build the complete file path safely by resolving against base directory
-                Path filePath = Paths.get(baseDir, requestedFile);
+                // Extract filename validation to separate method for security control purposes
+                Path baseDirPath = Paths.get(baseDir).normalize().toAbsolutePath();
+                Path filePath = baseDirPath.resolve(requestedFile).normalize();
                 
                 // Additional safety check - verify the resolved path is still within base directory
-                if (filePath.toAbsolutePath().startsWith(Paths.get(baseDir).toAbsolutePath())) {
+                if (filePath.toAbsolutePath().startsWith(baseDirPath)) {
                     // Read file content safely
                     byte[] fileBytes = Files.readAllBytes(filePath);
                     String content = new String(fileBytes);
