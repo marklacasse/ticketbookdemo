@@ -28,8 +28,31 @@ public class TicketService {
 		if ( key == null ) {
 			return Person.ANONYMOUS;
 		}
-		Person p = map.get( key );
+		// Sanitize input to prevent SQL injection
+		String sanitizedKey = validateTicketId(key);
+		Person p = map.get( sanitizedKey );
 		return ( p==null ? Person.ANONYMOUS : p );
+	}
+	
+	/**
+	 * Validates and sanitizes ticket identifiers to prevent SQL injection.
+	 * 
+	 * @param ticketId The ticket identifier to validate
+	 * @return The sanitized ticket identifier
+	 */
+	private String validateTicketId(String ticketId) {
+		if (ticketId == null || ticketId.isEmpty()) {
+			return ticketId;
+		}
+		
+		// Ticket IDs should only contain alphanumeric characters
+		if (!ticketId.matches("^[a-zA-Z0-9]+$")) {
+			// If invalid characters are found, return a non-matching value
+			Logger.getLogger(TicketService.class).warn("Invalid ticket ID format detected: " + ticketId);
+			return "";
+		}
+		
+		return ticketId;
 	}
 	
 	public Map<String,Person> getUsers() {
